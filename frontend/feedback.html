@@ -1,0 +1,2124 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>CARELINE | Hospital Feedback System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --ink:#06222b;
+    --teal:#176b87;
+    --gold:#c9a45c;
+    --pearl:#f6f4ef;
+    --line:#e3e7e8;
+    --muted:#64767d;
+    --red:#b3412b;
+}
+
+* {
+    box-sizing:border-box;
+    margin:0;
+}
+
+body {
+    font-family:'Manrope',sans-serif;
+    color:#14262d;
+    background:var(--pearl);
+    min-height:100vh;
+}
+
+/* NAVIGATION */
+
+header {
+    background:var(--ink);
+    color:white;
+    padding:18px 7%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.logo {
+    font-family:'Cormorant Garamond',serif;
+    font-size:28px;
+    letter-spacing:3px;
+    color:white;
+}
+
+nav {
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+nav button {
+    background:none;
+    border:none;
+    color:white;
+    font:inherit;
+    font-size:13px;
+    cursor:pointer;
+    padding:10px 13px;
+}
+
+nav button:hover,
+nav button.active {
+    color:var(--gold);
+}
+
+/* GENERAL SECTIONS */
+
+.page {
+    display:none;
+    min-height:85vh;
+}
+
+.page.active {
+    display:block;
+}
+
+button {
+    font-family:inherit;
+}
+
+.primary {
+    background:var(--teal);
+    color:white;
+    border:none;
+    padding:14px 22px;
+    border-radius:9px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.primary:hover {
+    background:#10536b;
+}
+
+input,select,textarea {
+    width:100%;
+    margin-top:8px;
+    padding:14px;
+    border:1px solid var(--line);
+    border-radius:9px;
+    background:white;
+    font:inherit;
+    font-size:14px;
+    color:#14262d;
+}
+
+input:focus,select:focus,textarea:focus {
+    outline:none;
+    border-color:var(--teal);
+    box-shadow:0 0 0 3px rgba(23,107,135,.12);
+}
+
+label {
+    display:block;
+    font-weight:600;
+    font-size:13px;
+    margin-top:19px;
+}
+
+.error {
+    color:var(--red);
+    font-size:12px;
+    margin-top:8px;
+    min-height:16px;
+}
+
+/* FEEDBACK PORTAL */
+
+.feedback-layout {
+    display:grid;
+    grid-template-columns:5fr 7fr;
+}
+
+.aside {
+    background:
+    radial-gradient(700px 400px at 0% 0%,rgba(23,107,135,.5),transparent 65%),
+    var(--ink);
+    color:white;
+    padding:65px 45px;
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.aside h1 {
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(38px,4vw,58px);
+    line-height:1.1;
+    margin-top:35px;
+}
+
+.aside p {
+    color:rgba(255,255,255,.7);
+    font-size:14px;
+    line-height:1.9;
+    margin-top:20px;
+    max-width:360px;
+}
+
+.aside .small {
+    color:var(--gold);
+    letter-spacing:3px;
+    font-size:12px;
+}
+
+.form-area {
+    padding:45px 6%;
+}
+
+.form-container {
+    max-width:650px;
+    margin:auto;
+}
+
+h2 {
+    font-family:'Cormorant Garamond',serif;
+    font-size:38px;
+    color:var(--ink);
+}
+
+.subtitle {
+    color:var(--muted);
+    font-size:14px;
+    margin:8px 0 25px;
+    line-height:1.7;
+}
+
+h3 {
+    font-family:'Cormorant Garamond',serif;
+    font-size:27px;
+    color:var(--ink);
+    margin-top:35px;
+}
+
+textarea {
+    height:110px;
+    resize:vertical;
+    line-height:1.6;
+}
+
+/* STAR RATINGS */
+
+#ratings {
+    margin-top:15px;
+    background:white;
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.category {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:17px 20px;
+}
+
+.category + .category {
+    border-top:1px solid var(--line);
+}
+
+.category label {
+    margin:0;
+    font-size:13px;
+}
+
+.rate {
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.rate-text {
+    font-size:11px;
+    color:var(--muted);
+    min-width:65px;
+    text-align:right;
+}
+
+.rate-text.set {
+    color:#98732d;
+    font-weight:700;
+}
+
+.stars {
+    display:flex;
+    gap:3px;
+}
+
+.stars span {
+    font-size:25px;
+    color:#d8dede;
+    cursor:pointer;
+    user-select:none;
+    line-height:1;
+}
+
+.stars span.active {
+    color:var(--gold);
+}
+
+.stars span.hover {
+    color:#e8d5a6;
+}
+
+.category.missing {
+    background:#fdf3ef;
+}
+
+.submit-feedback {
+    width:100%;
+    margin-top:25px;
+    padding:17px;
+    background:linear-gradient(120deg,var(--ink),var(--teal));
+    color:white;
+    border:0;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.success {
+    display:none;
+    text-align:center;
+    padding:70px 20px;
+}
+
+.success h2 {
+    margin-top:20px;
+}
+
+.success p {
+    color:var(--muted);
+    margin-top:12px;
+    line-height:1.7;
+}
+
+.success .check {
+    font-size:45px;
+    color:var(--gold);
+}
+
+/* ADMIN LOGIN */
+
+.auth-wrapper {
+    min-height:85vh;
+    display:grid;
+    place-items:center;
+    padding:30px 15px;
+    background:
+    radial-gradient(800px 400px at 0% 0%,rgba(23,107,135,.3),transparent 65%),
+    var(--ink);
+}
+
+.auth-box {
+    background:white;
+    width:100%;
+    max-width:430px;
+    padding:38px 34px;
+    border-radius:18px;
+    box-shadow:0 25px 60px rgba(0,0,0,.3);
+}
+
+.auth-logo {
+    font-family:'Cormorant Garamond',serif;
+    font-size:25px;
+    letter-spacing:3px;
+    color:var(--ink);
+}
+
+.auth-box h2 {
+    margin-top:20px;
+}
+
+.tabs {
+    display:flex;
+    background:#f0f3f4;
+    padding:5px;
+    border-radius:9px;
+    margin-top:25px;
+}
+
+.tabs button {
+    flex:1;
+    border:0;
+    padding:11px;
+    border-radius:7px;
+    font-weight:600;
+    color:var(--muted);
+    background:transparent;
+    cursor:pointer;
+}
+
+.tabs button.active {
+    background:var(--teal);
+    color:white;
+}
+
+.auth-form {
+    display:none;
+}
+
+.auth-form.active {
+    display:block;
+}
+
+.auth-submit {
+    width:100%;
+    margin-top:22px;
+}
+
+.show {
+    float:right;
+    background:none;
+    border:0;
+    color:var(--teal);
+    cursor:pointer;
+    font-weight:600;
+    font-size:12px;
+    margin-top:-28px;
+    margin-right:12px;
+    position:relative;
+}
+
+/* DASHBOARD */
+
+.dashboard {
+    padding:45px 7%;
+}
+
+.dashboard-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-bottom:30px;
+}
+
+.dashboard-header p {
+    color:var(--muted);
+    font-size:13px;
+    margin-top:6px;
+}
+
+.logout {
+    background:white;
+    color:var(--teal);
+    border:1px solid var(--teal);
+    border-radius:8px;
+    padding:12px 20px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.stats {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+    gap:18px;
+    margin-bottom:30px;
+}
+
+.stat-card {
+    background:white;
+    padding:25px;
+    border-radius:13px;
+    border:1px solid var(--line);
+}
+
+.stat-card p {
+    color:var(--muted);
+    font-size:13px;
+}
+
+.stat-card h2 {
+    font-size:34px;
+    margin-top:10px;
+}
+
+.feedback-list {
+    display:grid;
+    gap:18px;
+}
+
+.demo-notice {
+    margin:0 0 24px;
+    padding:13px 16px;
+    border:1px solid #e8d5a6;
+    border-radius:9px;
+    background:#fffaf0;
+    color:#70551c;
+    font-size:13px;
+    line-height:1.6;
+}
+
+.analytics-error {
+    display:none;
+    margin:0 0 18px;
+    color:var(--red);
+    font-size:13px;
+}
+
+.analytics-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
+    margin-bottom:38px;
+}
+
+.analytics-card {
+    min-width:0;
+    padding:22px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:white;
+}
+
+.analytics-card h3 {
+    margin:0 0 16px;
+    font-size:22px;
+}
+
+.analytics-chart {
+    position:relative;
+    height:280px;
+}
+
+.feedback-controls {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+    gap:12px;
+    margin:0 0 18px;
+    padding:18px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:white;
+}
+
+.feedback-controls label {
+    margin:0;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.feedback-controls input,
+.feedback-controls select {
+    margin-top:5px;
+    padding:10px;
+    font-size:13px;
+}
+
+.filter-actions {
+    display:flex;
+    align-items:flex-end;
+}
+
+.filter-actions button,
+.pagination button {
+    min-height:40px;
+    padding:9px 14px;
+    border:1px solid var(--teal);
+    border-radius:8px;
+    background:white;
+    color:var(--teal);
+    cursor:pointer;
+    font:inherit;
+    font-size:13px;
+    font-weight:600;
+}
+
+.filter-actions button:hover,
+.pagination button:hover:not(:disabled) {
+    background:var(--teal);
+    color:white;
+}
+
+.results-summary,
+.pagination {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin:0 0 16px;
+    color:var(--muted);
+    font-size:13px;
+}
+
+.pagination {
+    justify-content:center;
+    margin:24px 0 4px;
+}
+
+.pagination button:disabled {
+    cursor:not-allowed;
+    opacity:.45;
+}
+
+.sample-badge {
+    display:inline-block;
+    margin-left:8px;
+    padding:4px 8px;
+    border-radius:999px;
+    background:#fff3d4;
+    color:#70551c;
+    font:600 10px/1.3 'Manrope',sans-serif;
+    letter-spacing:.04em;
+    vertical-align:middle;
+}
+
+.feedback-card {
+    background:white;
+    padding:24px;
+    border:1px solid var(--line);
+    border-radius:13px;
+}
+
+.feedback-top {
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:15px;
+}
+
+.feedback-top h3 {
+    margin:0;
+    font-size:23px;
+}
+
+.feedback-top p {
+    font-size:12px;
+    color:var(--muted);
+    margin-top:5px;
+}
+
+.feedback-ratings {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:18px;
+}
+
+.rating-item {
+    font-size:12px;
+    color:var(--muted);
+}
+
+.rating-item strong {
+    display:block;
+    color:var(--ink);
+    margin-top:5px;
+}
+
+.comment {
+    background:var(--pearl);
+    padding:15px;
+    border-radius:9px;
+    margin-top:18px;
+    font-size:13px;
+    line-height:1.7;
+}
+
+.sentiment-label {
+    display:inline-block;
+    margin-top:14px;
+    padding:8px 11px;
+    border-radius:7px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.sentiment-positive {
+    background:#e8f4ec;
+    color:#287549;
+}
+
+.sentiment-neutral {
+    background:#fff5da;
+    color:#85661d;
+}
+
+.sentiment-negative {
+    background:#f9e9e5;
+    color:#a03c2c;
+}
+
+.delete-btn {
+    margin-top:17px;
+    background:white;
+    color:var(--red);
+    border:1px solid #e5c5bc;
+    padding:9px 15px;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+.empty {
+    background:white;
+    text-align:center;
+    padding:45px 15px;
+    border-radius:12px;
+    color:var(--muted);
+}
+
+/* FOOTER */
+
+footer {
+    background:var(--ink);
+    color:rgba(255,255,255,.65);
+    padding:22px;
+    text-align:center;
+    font-size:12px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:850px) {
+    .feedback-layout {
+        grid-template-columns:1fr;
+    }
+
+    .analytics-grid {
+        grid-template-columns:1fr;
+    }
+
+    .aside {
+        min-height:280px;
+        padding:35px 25px;
+    }
+
+    .aside h1 {
+        margin-top:20px;
+        font-size:40px;
+    }
+
+    .form-area {
+        padding:35px 20px;
+    }
+}
+
+@media(max-width:600px) {
+    header {
+        justify-content:center;
+        text-align:center;
+    }
+
+    nav {
+        justify-content:center;
+    }
+
+    nav button {
+        padding:8px;
+        font-size:12px;
+    }
+
+    .category {
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .rate {
+        width:100%;
+        justify-content:space-between;
+    }
+
+    .stars span {
+        font-size:28px;
+    }
+
+    .stats {
+        grid-template-columns:1fr;
+    }
+
+    .feedback-ratings {
+        grid-template-columns:1fr;
+    }
+
+    .dashboard {
+        padding:30px 18px;
+    }
+
+    .auth-box {
+        padding:30px 22px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<header>
+    <div class="logo">CARELINE</div>
+
+    <nav>
+        <button class="active" onclick="showPage('feedback',this)">
+            Feedback
+        </button>
+
+        <button onclick="showPage('admin',this)">
+            Admin Login
+        </button>
+    </nav>
+</header>
+
+
+<!-- PATIENT FEEDBACK PAGE -->
+
+<section id="feedback" class="page active">
+
+<div class="feedback-layout">
+
+    <aside class="aside">
+
+        <div class="small">YOUR HEALTH, OUR PRIORITY</div>
+
+        <h1>Tell us how we cared for you.</h1>
+
+        <p>
+            Every rating you give is important to us.
+            Your feedback helps our healthcare team improve
+            patient experience and hospital services.
+        </p>
+
+        <p>
+            Takes approximately two minutes.
+        </p>
+
+    </aside>
+
+
+    <main class="form-area">
+
+        <div class="form-container">
+
+            <div id="feedbackFormWrap">
+
+                <h2>Patient Feedback</h2>
+
+                <p class="subtitle">
+                    Share your experience and help us provide better healthcare.
+                </p>
+
+                <form id="feedbackForm">
+
+                    <label for="patientName">Patient Name</label>
+                    <input type="text" id="patientName"
+                    placeholder="Enter your name" maxlength="120" required>
+
+                    <label for="department">Select Your Department</label>
+
+                    <select id="department" required>
+                        <option value="">Choose your department</option>
+                        <option>Cardiology</option>
+                        <option>General Medicine</option>
+                        <option>Orthopaedics</option>
+                        <option>Paediatrics</option>
+                        <option>Gynaecology</option>
+                        <option>Dermatology</option>
+                        <option>Neurology</option>
+                        <option>Pharmacy</option>
+                        <option>Dental</option>
+                        <option>Emergency</option>
+                        <option>ENT</option>
+                        <option>Ophthalmology</option>
+                        <option>Other</option>
+                    </select>
+
+                    <h3>Rate Our Hospital Services</h3>
+
+                    <p class="subtitle">
+                        Select one to five stars for each service.
+                    </p>
+
+                    <div id="ratings"></div>
+
+                    <label for="comments">Additional Comments</label>
+
+                    <textarea id="comments"
+                    placeholder="Share your experience with us..."
+                    maxlength="5000"></textarea>
+
+                    <p class="error" id="feedbackError"></p>
+
+                    <button type="submit" class="submit-feedback">
+                        Submit Feedback
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <!-- FEEDBACK SUCCESS -->
+
+            <div class="success" id="feedbackSuccess">
+
+                <div class="check">✓</div>
+
+                <h2>Thank You!</h2>
+
+                <p>
+                    Your valuable feedback has been submitted successfully.
+                    We appreciate your time.
+                </p>
+
+                <button class="primary" style="margin-top:25px"
+                onclick="newFeedback()">
+                    Submit Another Response
+                </button>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</section>
+
+
+<!-- ADMIN LOGIN AND SIGNUP -->
+
+<section id="admin" class="page">
+
+<div class="auth-wrapper">
+
+    <div class="auth-box">
+
+        <div class="auth-logo">CARELINE</div>
+
+        <div id="authContent">
+
+            <h2 id="authHeading">Admin Login</h2>
+
+            <p class="subtitle" id="authSubtitle">
+                Sign in to access the hospital administration panel.
+            </p>
+
+            <div class="tabs">
+
+                <button id="loginTab" class="active"
+                onclick="switchTab('login')">
+                    Login
+                </button>
+
+                <button id="signupTab"
+                onclick="switchTab('signup')">
+                    Sign Up
+                </button>
+
+            </div>
+
+
+            <!-- LOGIN -->
+
+            <form id="loginForm" class="auth-form active">
+
+                <label>Email Address</label>
+
+                <input type="email" id="loginEmail"
+                placeholder="admin@careline.com" required>
+
+                <label>Password</label>
+
+                <input type="password" id="loginPassword"
+                placeholder="Enter your password" required>
+
+                <button type="button" class="show"
+                onclick="togglePassword('loginPassword',this)">
+                    Show
+                </button>
+
+                <p class="error" id="loginError"></p>
+
+                <button type="submit" class="primary auth-submit">
+                    Sign In
+                </button>
+
+            </form>
+
+
+            <!-- SIGNUP -->
+
+            <form id="signupForm" class="auth-form">
+
+                <label>Full Name</label>
+
+                <input type="text" id="signupName"
+                placeholder="Enter your name" required>
+
+                <label>Email Address</label>
+
+                <input type="email" id="signupEmail"
+                placeholder="Enter your email" required>
+
+                <label>Password</label>
+
+                <input type="password" id="signupPassword"
+                placeholder="Create password" minlength="8" required>
+
+                <button type="button" class="show"
+                onclick="togglePassword('signupPassword',this)">
+                    Show
+                </button>
+
+                <label>Confirm Password</label>
+
+                <input type="password" id="confirmPassword"
+                placeholder="Confirm password" required>
+
+                <p class="error" id="signupError"></p>
+
+                <button type="submit" class="primary auth-submit">
+                    Create Account
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ADMIN DASHBOARD WELCOME -->
+
+        <div id="adminWelcome" style="display:none;text-align:center">
+
+            <h2>Welcome Back!</h2>
+
+            <p class="subtitle" id="adminName"></p>
+
+            <button class="primary" style="width:100%"
+            onclick="openDashboard()">
+                Open Admin Dashboard
+            </button>
+
+            <button class="logout" style="margin-top:15px"
+            onclick="logout()">
+                Log Out
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- ADMIN DASHBOARD -->
+
+<section id="dashboard" class="page">
+
+<div class="dashboard">
+
+    <div class="dashboard-header">
+
+        <div>
+            <h2>Admin Dashboard</h2>
+            <p id="dashboardGreeting">Welcome to CARELINE administration.</p>
+        </div>
+
+        <button class="logout" onclick="logout()">
+            Log Out
+        </button>
+
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <p>Total Feedback</p>
+            <h2 id="totalFeedback">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Average Rating</p>
+            <h2 id="averageRating">0.0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Positive Feedback</p>
+            <h2 id="positiveFeedback">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Negative Feedback</p>
+            <h2 id="negativeFeedback">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Neutral Feedback</p>
+            <h2 id="neutralFeedback">0</h2>
+        </div>
+
+        <div class="stat-card">
+            <p>Departments Covered</p>
+            <h2 id="totalDepartments">0</h2>
+        </div>
+
+    </div>
+
+    <p id="analyticsError" class="analytics-error" role="status"></p>
+    <div class="analytics-grid">
+        <article class="analytics-card">
+            <h3>Average Rating by Service</h3>
+            <div class="analytics-chart">
+                <canvas id="ratingsChart"
+                aria-label="Average patient rating for each hospital service"></canvas>
+            </div>
+        </article>
+        <article class="analytics-card">
+            <h3>Feedback by Department</h3>
+            <div class="analytics-chart">
+                <canvas id="departmentChart"
+                aria-label="Patient feedback counts by department"></canvas>
+            </div>
+        </article>
+        <article class="analytics-card">
+            <h3>Sentiment Distribution</h3>
+            <div class="analytics-chart">
+                <canvas id="sentimentChart"
+                aria-label="Positive, neutral, and negative patient comment counts"></canvas>
+            </div>
+        </article>
+        <article class="analytics-card">
+            <h3>Rating Distribution</h3>
+            <div class="analytics-chart">
+                <canvas id="ratingDistributionChart"
+                aria-label="Distribution of submitted one-to-five star ratings"></canvas>
+            </div>
+        </article>
+        <article class="analytics-card">
+            <h3>Feedback Trends Over Time</h3>
+            <div class="analytics-chart">
+                <canvas id="trendChart"
+                aria-label="Feedback submissions by month"></canvas>
+            </div>
+        </article>
+    </div>
+
+    <h2 style="font-size:30px;margin-bottom:20px">
+        Patient Feedback Records
+    </h2>
+
+    <div class="feedback-controls" aria-label="Feedback filters">
+        <label for="feedbackSearch">Search
+            <input id="feedbackSearch" type="search" placeholder="Patient or comment">
+        </label>
+        <label for="departmentFilter">Department
+            <select id="departmentFilter">
+                <option value="">All departments</option>
+            </select>
+        </label>
+        <label for="ratingFilter">Average rating
+            <select id="ratingFilter">
+                <option value="">All ratings</option>
+                <option value="5">5 stars</option>
+                <option value="4">4 stars</option>
+                <option value="3">3 stars</option>
+                <option value="2">2 stars</option>
+                <option value="1">1 star</option>
+            </select>
+        </label>
+        <label for="sentimentFilter">Sentiment
+            <select id="sentimentFilter">
+                <option value="">All sentiments</option>
+                <option value="Positive">Positive</option>
+                <option value="Neutral">Neutral</option>
+                <option value="Negative">Negative</option>
+            </select>
+        </label>
+        <label for="dateFrom">From date
+            <input id="dateFrom" type="date">
+        </label>
+        <label for="dateTo">To date
+            <input id="dateTo" type="date">
+        </label>
+        <label for="sortFilter">Sort by
+            <select id="sortFilter">
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="rating-high">Highest rating</option>
+                <option value="rating-low">Lowest rating</option>
+                <option value="name">Patient name</option>
+            </select>
+        </label>
+        <div class="filter-actions">
+            <button id="resetFilters" type="button">Clear filters</button>
+        </div>
+    </div>
+
+    <p id="resultsSummary" class="results-summary" aria-live="polite"></p>
+    <div id="feedbackRecords" class="feedback-list"></div>
+    <div class="pagination" aria-label="Feedback pages">
+        <button id="previousPage" type="button">Previous</button>
+        <span id="pageInfo"></span>
+        <button id="nextPage" type="button">Next</button>
+    </div>
+
+</div>
+
+</section>
+
+
+<footer>
+    © 2026 CARELINE Hospital | Patient Care & Feedback Management
+</footer>
+
+
+<script>
+
+const configuredApiUrl = new URLSearchParams(window.location.search).get("api");
+const localHostname = ["", "localhost", "127.0.0.1"].includes(window.location.hostname);
+const API_BASE_URL = (
+    configuredApiUrl ||
+    (localHostname
+        ? `${window.location.protocol === "file:" ? "http:" : window.location.protocol}//${window.location.hostname || "127.0.0.1"}:5000/api`
+        : "/api")
+).replace(/\/$/, "");
+
+let isLoggedIn = false;
+let currentAdminName = "";
+
+async function apiRequest(path, options = {}) {
+    let response;
+    try {
+        response = await fetch(`${API_BASE_URL}${path}`, {
+            credentials: "include",
+            ...options,
+            headers: {
+                ...(options.body ? {"Content-Type": "application/json"} : {}),
+                ...(options.headers || {})
+            }
+        });
+    } catch (error) {
+        throw new Error("Unable to connect to the CARELINE backend. Check that the backend is running.");
+    }
+
+    let data;
+    try {
+        data = await response.json();
+    } catch (error) {
+        if (response.ok) {
+            throw new Error("The backend returned an invalid response.");
+        }
+        data = {};
+    }
+
+    if (!response.ok) {
+        const error = new Error(data.message || `The request failed (${response.status}).`);
+        error.status = response.status;
+        throw error;
+    }
+
+    return data;
+}
+
+/* PAGE NAVIGATION */
+
+function showPage(page,button) {
+
+    if(page === "dashboard" && !isLoggedIn) {
+        page = "admin";
+    }
+
+    document.querySelectorAll(".page").forEach(p => {
+        p.classList.remove("active");
+    });
+
+    document.getElementById(page).classList.add("active");
+
+    document.querySelectorAll("nav button").forEach(b => {
+        b.classList.remove("active");
+    });
+
+    if(button) {
+        button.classList.add("active");
+    }
+
+    window.scrollTo(0,0);
+
+    if(page === "dashboard") {
+        loadDashboard();
+    }
+}
+
+
+/* FEEDBACK CATEGORIES */
+
+const categories = [
+    "Doctor Consultation",
+    "Nursing Care",
+    "Cleanliness & Hygiene",
+    "Hospital Facilities",
+    "Emergency Services",
+    "Pharmacy Service",
+    "Waiting Time",
+    "Staff Behaviour"
+];
+
+const ratingLabels = [
+    "Poor",
+    "Fair",
+    "Good",
+    "Very Good",
+    "Excellent"
+];
+
+const ratingsBox = document.getElementById("ratings");
+
+categories.forEach((category,index) => {
+
+    const row = document.createElement("div");
+    row.className = "category";
+
+    const label = document.createElement("label");
+    label.innerText = category;
+
+    const rate = document.createElement("div");
+    rate.className = "rate";
+
+    const text = document.createElement("span");
+    text.className = "rate-text";
+    text.innerText = "Not rated";
+
+    const stars = document.createElement("div");
+    stars.className = "stars";
+    stars.dataset.category = category;
+    stars.dataset.rating = "0";
+
+    for(let i=1;i<=5;i++) {
+
+        const star = document.createElement("span");
+
+        star.innerHTML = "★";
+        star.tabIndex = 0;
+        star.setAttribute("role","button");
+        star.setAttribute("aria-label",i+" out of 5 stars");
+
+        function chooseStar() {
+
+            stars.dataset.rating = i;
+
+            stars.querySelectorAll("span").forEach((s,n) => {
+                s.classList.toggle("active",n<i);
+            });
+
+            text.innerText = ratingLabels[i-1];
+            text.classList.add("set");
+
+            row.classList.remove("missing");
+        }
+
+        star.addEventListener("click",chooseStar);
+
+        star.addEventListener("keydown",e => {
+            if(e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                chooseStar();
+            }
+        });
+
+        star.addEventListener("mouseenter",() => {
+            stars.querySelectorAll("span").forEach((s,n) => {
+                s.classList.toggle("hover",n<i);
+            });
+        });
+
+        stars.appendChild(star);
+    }
+
+    stars.addEventListener("mouseleave",() => {
+        stars.querySelectorAll("span").forEach(s => {
+            s.classList.remove("hover");
+        });
+    });
+
+    rate.appendChild(text);
+    rate.appendChild(stars);
+
+    row.appendChild(label);
+    row.appendChild(rate);
+
+    ratingsBox.appendChild(row);
+
+});
+
+
+/* RESET RATINGS */
+
+function resetRatings() {
+
+    document.querySelectorAll(".stars").forEach(group => {
+
+        group.dataset.rating = "0";
+
+        group.querySelectorAll("span").forEach(star => {
+            star.classList.remove("active","hover");
+        });
+
+        const text = group.parentElement.querySelector(".rate-text");
+
+        text.innerText = "Not rated";
+        text.classList.remove("set");
+
+        group.closest(".category").classList.remove("missing");
+
+    });
+
+}
+
+
+/* SUBMIT PATIENT FEEDBACK */
+
+document.getElementById("feedbackForm").addEventListener("submit",async function(e) {
+
+    e.preventDefault();
+
+    const error = document.getElementById("feedbackError");
+    error.innerText = "";
+
+    const name = document.getElementById("patientName").value.trim();
+    const department = document.getElementById("department").value;
+    const comments = document.getElementById("comments").value.trim();
+
+    if(!name || !department) {
+        error.innerText = "Please complete the required details.";
+        return;
+    }
+
+    let ratings = {};
+    let missing = null;
+
+    document.querySelectorAll(".stars").forEach(group => {
+
+        let value = Number(group.dataset.rating);
+
+        if(value === 0) {
+            group.closest(".category").classList.add("missing");
+            missing = missing || group.closest(".category");
+        }
+
+        ratings[group.dataset.category] = value;
+
+    });
+
+    if(missing) {
+        error.innerText = "Please rate all eight hospital services.";
+        missing.scrollIntoView({behavior:"smooth",block:"center"});
+        return;
+    }
+
+    const record = {
+        name: name,
+        department: department,
+        ratings: ratings,
+        comments: comments
+    };
+
+    const submitButton = this.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    try {
+        await apiRequest("/feedback", {
+            method: "POST",
+            body: JSON.stringify(record)
+        });
+    } catch (requestError) {
+        error.innerText = requestError.message;
+        return;
+    } finally {
+        submitButton.disabled = false;
+    }
+
+    this.reset();
+    resetRatings();
+
+    document.getElementById("feedbackFormWrap").style.display = "none";
+    document.getElementById("feedbackSuccess").style.display = "block";
+
+});
+
+
+/* NEW FEEDBACK */
+
+function newFeedback() {
+
+    document.getElementById("feedbackSuccess").style.display = "none";
+    document.getElementById("feedbackFormWrap").style.display = "block";
+
+    window.scrollTo({top:0,behavior:"smooth"});
+
+}
+
+
+/* LOGIN / SIGNUP SWITCH */
+
+function switchTab(type) {
+
+    document.getElementById("loginForm").classList.remove("active");
+    document.getElementById("signupForm").classList.remove("active");
+
+    document.getElementById("loginTab").classList.remove("active");
+    document.getElementById("signupTab").classList.remove("active");
+
+    document.getElementById("loginError").innerText = "";
+    document.getElementById("signupError").innerText = "";
+
+    if(type === "login") {
+
+        document.getElementById("loginForm").classList.add("active");
+        document.getElementById("loginTab").classList.add("active");
+
+        document.getElementById("authHeading").innerText = "Admin Login";
+        document.getElementById("authSubtitle").innerText =
+        "Sign in to access the hospital administration panel.";
+
+    } else {
+
+        document.getElementById("signupForm").classList.add("active");
+        document.getElementById("signupTab").classList.add("active");
+
+        document.getElementById("authHeading").innerText = "Create Account";
+        document.getElementById("authSubtitle").innerText =
+        "Register an admin account to get started.";
+
+    }
+
+}
+
+
+/* PASSWORD VISIBILITY */
+
+function togglePassword(id,button) {
+
+    const input = document.getElementById(id);
+
+    if(input.type === "password") {
+        input.type = "text";
+        button.innerText = "Hide";
+    } else {
+        input.type = "password";
+        button.innerText = "Show";
+    }
+
+}
+
+
+/* ADMIN SIGNUP */
+
+document.getElementById("signupForm").addEventListener("submit",async function(e) {
+
+    e.preventDefault();
+
+    const name = document.getElementById("signupName").value.trim();
+    const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+    const password = document.getElementById("signupPassword").value;
+    const confirm = document.getElementById("confirmPassword").value;
+
+    const error = document.getElementById("signupError");
+
+    error.innerText = "";
+
+    if(password.length < 8) {
+        error.innerText = "Password must contain at least 8 characters.";
+        return;
+    }
+
+    if(password !== confirm) {
+        error.innerText = "Passwords do not match.";
+        return;
+    }
+
+    const submitButton = this.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    try {
+        await apiRequest("/signup", {
+            method: "POST",
+            body: JSON.stringify({name, email, password})
+        });
+    } catch (requestError) {
+        error.innerText = requestError.message;
+        return;
+    } finally {
+        submitButton.disabled = false;
+    }
+
+    this.reset();
+
+    switchTab("login");
+
+    document.getElementById("loginEmail").value = email;
+
+});
+
+
+/* ADMIN LOGIN */
+
+document.getElementById("loginForm").addEventListener("submit",async function(e) {
+
+    e.preventDefault();
+
+    const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+    const password = document.getElementById("loginPassword").value;
+
+    const error = document.getElementById("loginError");
+
+    error.innerText = "";
+
+    const submitButton = this.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    try {
+        const result = await apiRequest("/login", {
+            method: "POST",
+            body: JSON.stringify({email, password})
+        });
+        isLoggedIn = true;
+        currentAdminName = result.name;
+        showAdminWelcome(result.name);
+    } catch (requestError) {
+        error.innerText = requestError.message;
+    } finally {
+        submitButton.disabled = false;
+    }
+
+});
+
+
+/* ADMIN WELCOME */
+
+function showAdminWelcome(name) {
+
+    currentAdminName = name;
+    document.getElementById("authContent").style.display = "none";
+    document.getElementById("adminWelcome").style.display = "block";
+
+    document.getElementById("adminName").innerText =
+    "Welcome, " + name + ". You are successfully logged in.";
+
+}
+
+
+/* OPEN DASHBOARD */
+
+function openDashboard() {
+
+    if(!isLoggedIn) {
+        document.getElementById("loginError").innerText = "Please log in first.";
+        return;
+    }
+
+    showPage("dashboard");
+
+}
+
+
+/* LOAD DASHBOARD */
+
+let allFeedback = [];
+let currentPage = 1;
+const FEEDBACK_PAGE_SIZE = 10;
+
+function averageRecordRating(record) {
+    const values = Object.values(record.ratings || {})
+        .map(Number)
+        .filter(value => Number.isFinite(value) && value >= 1 && value <= 5);
+    return values.length
+        ? values.reduce((sum, value) => sum + value, 0) / values.length
+        : 0;
+}
+
+function renderFeedbackRecords() {
+    const searchTerm = document.getElementById("feedbackSearch").value.trim().toLowerCase();
+    const selectedDepartment = document.getElementById("departmentFilter").value;
+    const selectedRating = document.getElementById("ratingFilter").value;
+    const selectedSentiment = document.getElementById("sentimentFilter").value;
+    const dateFrom = document.getElementById("dateFrom").value;
+    const dateTo = document.getElementById("dateTo").value;
+    const sortBy = document.getElementById("sortFilter").value;
+
+    const filtered = allFeedback.filter(record => {
+        const searchableText = [
+            record.name,
+            record.department,
+            record.comments,
+            record.sentiment,
+            ...Object.keys(record.ratings || {})
+        ].join(" ").toLowerCase();
+        const timestamp = record.date ? new Date(record.date) : null;
+        const validDate = timestamp && !Number.isNaN(timestamp.getTime());
+        const recordDate = validDate ? timestamp.toISOString().slice(0, 10) : "";
+
+        return (!searchTerm || searchableText.includes(searchTerm)) &&
+            (!selectedDepartment || record.department === selectedDepartment) &&
+            (!selectedRating || Math.round(averageRecordRating(record)) === Number(selectedRating)) &&
+            (!selectedSentiment || record.sentiment === selectedSentiment) &&
+            (!dateFrom || (validDate && recordDate >= dateFrom)) &&
+            (!dateTo || (validDate && recordDate <= dateTo));
+    });
+
+    filtered.sort((first, second) => {
+        if (sortBy === "oldest") {
+            return Date.parse(first.date || "") - Date.parse(second.date || "");
+        }
+        if (sortBy === "rating-high") {
+            return averageRecordRating(second) - averageRecordRating(first);
+        }
+        if (sortBy === "rating-low") {
+            return averageRecordRating(first) - averageRecordRating(second);
+        }
+        if (sortBy === "name") {
+            return (first.name || "Anonymous").localeCompare(second.name || "Anonymous");
+        }
+        return Date.parse(second.date || "") - Date.parse(first.date || "");
+    });
+
+    const pageCount = Math.max(1, Math.ceil(filtered.length / FEEDBACK_PAGE_SIZE));
+    currentPage = Math.min(currentPage, pageCount);
+    const start = (currentPage - 1) * FEEDBACK_PAGE_SIZE;
+    const pageRecords = filtered.slice(start, start + FEEDBACK_PAGE_SIZE);
+    const container = document.getElementById("feedbackRecords");
+    container.replaceChildren();
+
+    document.getElementById("resultsSummary").textContent = filtered.length
+        ? `Showing ${start + 1}-${Math.min(start + FEEDBACK_PAGE_SIZE, filtered.length)} of ${filtered.length} records`
+        : "Showing 0 records";
+    document.getElementById("pageInfo").textContent =
+        `Page ${currentPage} of ${pageCount}`;
+    document.getElementById("previousPage").disabled = currentPage <= 1;
+    document.getElementById("nextPage").disabled = currentPage >= pageCount;
+
+    if (!pageRecords.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = allFeedback.length
+            ? "No feedback matches these filters."
+            : "No patient feedback received yet.";
+        container.appendChild(empty);
+        return;
+    }
+
+    pageRecords.forEach(record => {
+        const card = document.createElement("div");
+        card.className = "feedback-card";
+
+        const top = document.createElement("div");
+        top.className = "feedback-top";
+        const details = document.createElement("div");
+        const heading = document.createElement("h3");
+        heading.textContent = record.name || "Anonymous";
+
+        const department = document.createElement("p");
+        department.textContent = "Department: " + (record.department || "Not specified");
+        const date = document.createElement("p");
+        const submittedAt = record.date ? new Date(record.date) : null;
+        date.textContent = "Submitted: " + (
+            submittedAt && !Number.isNaN(submittedAt.getTime())
+                ? submittedAt.toLocaleString()
+                : "Date unavailable"
+        );
+        details.append(heading, department, date);
+        top.appendChild(details);
+
+        const ratings = document.createElement("div");
+        ratings.className = "feedback-ratings";
+        Object.entries(record.ratings || {}).forEach(([category, value]) => {
+            const item = document.createElement("div");
+            item.className = "rating-item";
+            const title = document.createElement("span");
+            title.textContent = category;
+            const score = document.createElement("strong");
+            score.textContent = "★".repeat(Number(value)) + " (" + value + "/5)";
+            item.append(title, score);
+            ratings.appendChild(item);
+        });
+
+        const comment = document.createElement("div");
+        comment.className = "comment";
+        const commentTitle = document.createElement("strong");
+        commentTitle.textContent = "Patient Comments: ";
+        const commentText = document.createElement("span");
+        commentText.textContent = record.comments || "No additional comments.";
+        comment.append(commentTitle, commentText);
+
+        const sentiment = document.createElement("p");
+        const sentimentLabel = ["Positive", "Neutral", "Negative"].includes(record.sentiment)
+            ? record.sentiment
+            : "Neutral";
+        sentiment.className = "sentiment-label sentiment-" + sentimentLabel.toLowerCase();
+        sentiment.textContent =
+            "Comment sentiment: " + sentimentLabel +
+            " (score " + Number(record.sentiment_score || 0).toFixed(2) + ")";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete-btn";
+        deleteButton.textContent = "Delete Feedback";
+        deleteButton.addEventListener("click", () => deleteFeedback(record.id));
+
+        card.append(top, ratings, comment, sentiment, deleteButton);
+        container.appendChild(card);
+    });
+}
+
+function populateDepartmentFilter(feedback) {
+    const filter = document.getElementById("departmentFilter");
+    const selectedDepartment = filter.value;
+    filter.replaceChildren(new Option("All departments", ""));
+    [...new Set(feedback.map(record => record.department).filter(Boolean))]
+        .sort()
+        .forEach(department => filter.add(new Option(department, department)));
+    filter.value = selectedDepartment;
+}
+
+["feedbackSearch", "departmentFilter", "ratingFilter", "sentimentFilter",
+    "dateFrom", "dateTo", "sortFilter"].forEach(id => {
+    const control = document.getElementById(id);
+    control.addEventListener("input", () => {
+        currentPage = 1;
+        renderFeedbackRecords();
+    });
+    control.addEventListener("change", () => {
+        currentPage = 1;
+        renderFeedbackRecords();
+    });
+});
+
+document.getElementById("resetFilters").addEventListener("click", () => {
+    document.getElementById("feedbackSearch").value = "";
+    document.getElementById("departmentFilter").value = "";
+    document.getElementById("ratingFilter").value = "";
+    document.getElementById("sentimentFilter").value = "";
+    document.getElementById("dateFrom").value = "";
+    document.getElementById("dateTo").value = "";
+    document.getElementById("sortFilter").value = "newest";
+    currentPage = 1;
+    renderFeedbackRecords();
+});
+
+document.getElementById("previousPage").addEventListener("click", () => {
+    currentPage--;
+    renderFeedbackRecords();
+});
+
+document.getElementById("nextPage").addEventListener("click", () => {
+    currentPage++;
+    renderFeedbackRecords();
+});
+
+async function loadDashboard() {
+
+    if(!isLoggedIn) {
+        showPage("admin");
+        return;
+    }
+
+    const container = document.getElementById("feedbackRecords");
+    container.textContent = "Loading feedback...";
+
+    let feedback;
+    try {
+        const result = await apiRequest("/feedback");
+        feedback = result.feedback;
+    } catch (requestError) {
+        if (requestError.status === 401) {
+            isLoggedIn = false;
+            document.getElementById("authContent").style.display = "block";
+            document.getElementById("adminWelcome").style.display = "none";
+            document.getElementById("loginError").innerText = "Your session has expired. Please sign in again.";
+            showPage("admin");
+            return;
+        }
+        container.textContent = requestError.message;
+        return;
+    }
+
+    allFeedback = feedback;
+    document.getElementById("totalFeedback").innerText = feedback.length;
+
+    const departments = new Set(feedback.map(f => f.department));
+
+    document.getElementById("totalDepartments").innerText = departments.size;
+
+    let total = 0;
+    let count = 0;
+    feedback.forEach(f => {
+        Object.values(f.ratings || {}).forEach(value => {
+            const rating = Number(value);
+            if (Number.isFinite(rating) && rating >= 1 && rating <= 5) {
+                total += rating;
+                count++;
+            }
+        });
+    });
+
+    document.getElementById("averageRating").innerText =
+        count ? (total / count).toFixed(1) + "/5" : "0.0";
+    document.getElementById("positiveFeedback").innerText =
+        feedback.filter(record => record.sentiment === "Positive").length;
+    document.getElementById("negativeFeedback").innerText =
+        feedback.filter(record => record.sentiment === "Negative").length;
+    document.getElementById("neutralFeedback").innerText =
+        feedback.filter(record => record.sentiment === "Neutral").length;
+
+    document.getElementById("dashboardGreeting").innerText =
+        "Welcome, " + (currentAdminName || "Admin");
+
+    window.dispatchEvent(new CustomEvent("careline:feedback-loaded", {
+        detail: feedback
+    }));
+
+    populateDepartmentFilter(feedback);
+    renderFeedbackRecords();
+
+}
+
+
+/* DELETE FEEDBACK */
+
+async function deleteFeedback(id) {
+
+    if(!confirm("Are you sure you want to delete this feedback?")) {
+        return;
+    }
+
+    try {
+        await apiRequest(`/feedback/${id}`, {method: "DELETE"});
+        await loadDashboard();
+    } catch (requestError) {
+        alert(requestError.message);
+    }
+
+}
+
+
+/* LOGOUT */
+
+async function logout() {
+
+    try {
+        await apiRequest("/logout", {method: "POST"});
+    } catch (requestError) {
+        alert(requestError.message);
+        return;
+    }
+
+    isLoggedIn = false;
+    currentAdminName = "";
+
+    document.getElementById("authContent").style.display = "block";
+    document.getElementById("adminWelcome").style.display = "none";
+
+    document.getElementById("loginForm").reset();
+    document.getElementById("signupForm").reset();
+
+    switchTab("login");
+
+    showPage("feedback");
+
+}
+
+
+/* RESTORE LOGIN SESSION */
+
+apiRequest("/session")
+    .then(result => {
+        isLoggedIn = true;
+        showAdminWelcome(result.name);
+    })
+    .catch(requestError => {
+        if (requestError.status !== 401) {
+            document.getElementById("loginError").innerText = requestError.message;
+        }
+    });
+
+</script>
+<script>
+(() => {
+    const categories = [
+        "Doctor Consultation",
+        "Nursing Care",
+        "Cleanliness & Hygiene",
+        "Hospital Facilities",
+        "Emergency Services",
+        "Pharmacy Service",
+        "Waiting Time",
+        "Staff Behaviour"
+    ];
+    let charts = [];
+
+    window.addEventListener("careline:feedback-loaded", event => {
+        const errorMessage = document.getElementById("analyticsError");
+        if (typeof Chart === "undefined") {
+            errorMessage.textContent =
+                "Charts are unavailable. Check your internet connection and reload.";
+            errorMessage.style.display = "block";
+            return;
+        }
+        errorMessage.textContent = "";
+        errorMessage.style.display = "none";
+
+        charts.forEach(chart => chart.destroy());
+        charts = [];
+
+        const feedback = event.detail;
+        const averageRatings = categories.map(category => {
+            const values = feedback
+                .map(record => Number((record.ratings || {})[category]))
+                .filter(value => Number.isFinite(value) && value >= 1 && value <= 5);
+            return values.length
+                ? Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2))
+                : 0;
+        });
+
+        charts.push(new Chart(document.getElementById("ratingsChart"), {
+            type: "bar",
+            data: {
+                labels: categories,
+                datasets: [{
+                    label: "Average rating (out of 5)",
+                    data: averageRatings,
+                    backgroundColor: "#176b87",
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {beginAtZero: true, max: 5, ticks: {stepSize: 1}}
+                },
+                plugins: {legend: {display: false}}
+            }
+        }));
+
+        const sentimentLabels = ["Positive", "Neutral", "Negative"];
+        const sentimentCounts = sentimentLabels.map(label =>
+            feedback.filter(record => record.sentiment === label).length
+        );
+
+        charts.push(new Chart(document.getElementById("departmentChart"), {
+            type: "bar",
+            data: {
+                labels: [...new Set(feedback.map(record => record.department).filter(Boolean))].sort(),
+                datasets: [{
+                    label: "Feedback records",
+                    data: [...new Set(feedback.map(record => record.department).filter(Boolean))]
+                        .sort()
+                        .map(department =>
+                            feedback.filter(record => record.department === department).length
+                        ),
+                    backgroundColor: "#176b87",
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {x: {beginAtZero: true, ticks: {stepSize: 1}}},
+                plugins: {legend: {display: false}}
+            }
+        }));
+
+        charts.push(new Chart(document.getElementById("sentimentChart"), {
+            type: "doughnut",
+            data: {
+                labels: sentimentLabels,
+                datasets: [{
+                    data: sentimentCounts,
+                    backgroundColor: ["#3c9b68", "#c9a45c", "#c85445"],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {legend: {position: "bottom"}}
+            }
+        }));
+
+        const ratingLabels = ["1 star", "2 stars", "3 stars", "4 stars", "5 stars"];
+        const ratingCounts = [1, 2, 3, 4, 5].map(rating =>
+            feedback.reduce((count, record) => count + Object.values(record.ratings || {})
+                .filter(value => Number(value) === rating).length, 0)
+        );
+        charts.push(new Chart(document.getElementById("ratingDistributionChart"), {
+            type: "bar",
+            data: {
+                labels: ratingLabels,
+                datasets: [{
+                    label: "Service ratings",
+                    data: ratingCounts,
+                    backgroundColor: ["#c85445", "#d9896f", "#c9a45c", "#6ca9a2", "#3c9b68"],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {y: {beginAtZero: true, ticks: {stepSize: 1}}},
+                plugins: {legend: {display: false}}
+            }
+        }));
+
+        const trendCounts = new Map();
+        feedback.forEach(record => {
+            const date = record.date ? new Date(record.date) : null;
+            if (!date || Number.isNaN(date.getTime())) return;
+            const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+            trendCounts.set(key, (trendCounts.get(key) || 0) + 1);
+        });
+        const trendKeys = [...trendCounts.keys()].sort();
+        const trendLabels = trendKeys.map(key => {
+            const [year, month] = key.split("-").map(Number);
+            return new Date(year, month - 1, 1).toLocaleString(undefined, {
+                month: "short",
+                year: "numeric"
+            });
+        });
+        charts.push(new Chart(document.getElementById("trendChart"), {
+            type: "line",
+            data: {
+                labels: trendLabels,
+                datasets: [{
+                    label: "Feedback submissions",
+                    data: trendKeys.map(key => trendCounts.get(key)),
+                    borderColor: "#176b87",
+                    backgroundColor: "rgba(23,107,135,.15)",
+                    fill: true,
+                    tension: 0.25
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {y: {beginAtZero: true, ticks: {stepSize: 1}}},
+                plugins: {legend: {display: false}}
+            }
+        }));
+    });
+})();
+</script>
+
+</body>
+</html>
